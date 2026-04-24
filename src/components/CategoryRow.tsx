@@ -14,25 +14,25 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function CategoryRow({ data }: Props) {
   const icon = CATEGORY_ICONS[data.category] ?? "🎬";
-  const preview = data.movies.slice(0, 5);
 
   return (
     <section className="mb-10">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+        <h2 className="text-base font-bold text-[#f2f1ed] flex items-center gap-2 uppercase tracking-widest">
           <span>{icon}</span>
           {data.category}
+          <span className="text-[#838f6f] font-normal text-xs normal-case tracking-normal">
+            ({data.movies.length})
+          </span>
         </h2>
-        <a
-          href={`/category/${encodeURIComponent(data.category)}`}
-          className="text-xs text-[#00c030] hover:text-[#00e054] font-semibold uppercase tracking-widest transition-colors"
-        >
-          Ver más →
-        </a>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {preview.map((movie) => (
-          <MovieCard key={movie.imdbID} movie={movie} />
+
+      {/* Carrusel horizontal — muestra todas las películas */}
+      <div className="flex gap-3 overflow-x-auto pb-3 scroll-smooth snap-x snap-mandatory">
+        {data.movies.map((movie) => (
+          <div key={movie.imdbID} className="snap-start shrink-0">
+            <MovieCard movie={movie} />
+          </div>
         ))}
       </div>
     </section>

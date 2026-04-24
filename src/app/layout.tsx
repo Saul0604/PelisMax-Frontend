@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-[#14181c] text-white">
+      <body className="min-h-full flex flex-col bg-[#161616] text-[#f2f1ed]">
         <Header />
         <div className="pt-12 flex-1">{children}</div>
       </body>

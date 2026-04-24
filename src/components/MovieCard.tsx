@@ -8,50 +8,39 @@ interface Props {
 
 export default function MovieCard({ movie }: Props) {
   const poster =
-    movie.Poster && movie.Poster !== "N/A"
-      ? movie.Poster
-      : "/no-poster.svg";
+    movie.Poster && movie.Poster !== "N/A" ? movie.Poster : null;
 
   return (
     <Link
       href={`/movie/${movie.imdbID}`}
-      className="group relative flex-shrink-0 w-28 sm:w-32 md:w-36"
+      className="group w-28 sm:w-32 md:w-36 block"
     >
-      <div className="relative aspect-[2/3] rounded overflow-hidden bg-[#1f2937]">
-        <Image
-          src={poster}
-          alt={movie.Title}
-          fill
-          sizes="(max-width: 640px) 112px, (max-width: 768px) 128px, 144px"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          unoptimized={poster === "/no-poster.svg"}
-        />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
-          <svg
-            className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-            />
-          </svg>
-        </div>
+      <div className="relative aspect-[2/3] rounded overflow-hidden bg-[#1e1e1e] border border-[#2a2a2a]">
+        {poster ? (
+          <Image
+            src={poster}
+            alt={movie.Title}
+            fill
+            sizes="(max-width: 640px) 112px, (max-width: 768px) 128px, 144px"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            unoptimized
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-[#5a5a5a]">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+            </svg>
+          </div>
+        )}
+
+        {/* Overlay en hover */}
+        <div className="absolute inset-0 bg-[#710014]/0 group-hover:bg-[#710014]/30 transition-colors duration-300" />
       </div>
-      <p className="mt-1.5 text-xs text-[#9ca3af] truncate group-hover:text-white transition-colors leading-tight">
+
+      <p className="mt-1.5 text-xs text-[#838f6f] truncate group-hover:text-[#f2f1ed] transition-colors leading-tight">
         {movie.Title}
       </p>
-      <p className="text-xs text-[#6b7280]">{movie.Year}</p>
+      <p className="text-xs text-[#5a5a5a]">{movie.Year}</p>
     </Link>
   );
 }
