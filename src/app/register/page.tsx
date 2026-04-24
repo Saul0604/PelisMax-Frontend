@@ -2,19 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError("");
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
       setError("Todos los campos son obligatorios.");
@@ -37,7 +35,7 @@ export default function RegisterPage() {
         setError(data.message || "Error al crear la cuenta. Intenta de nuevo.");
         return;
       }
-      setSuccess(true);
+      window.location.href = "/";
     } catch {
       setError("No se pudo conectar con el servidor. Verifica tu conexión.");
     } finally {
@@ -61,35 +59,6 @@ export default function RegisterPage() {
           </svg>
         </Link>
 
-        {success ? (
-          /* ── Pantalla de éxito ── */
-          <div className="flex flex-col items-center text-center gap-5 py-4">
-            <div className="w-14 h-14 rounded-full bg-[#710014]/20 border border-[#710014]/40 flex items-center justify-center">
-              <svg className="w-7 h-7 text-[#710014]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-
-            <div>
-              <h2 className="text-base font-bold text-[#f2f1ed] uppercase tracking-widest mb-1">
-                ¡Cuenta creada!
-              </h2>
-              <p className="text-sm text-[#838f6f]">
-                Bienvenido, <span className="text-[#f2f1ed]">{form.name}</span>.
-                <br />
-                Ya puedes acceder al catálogo de películas.
-              </p>
-            </div>
-
-            <Link
-              href="/"
-              className="w-full text-center bg-[#710014] hover:bg-[#8b0018] text-[#f2f1ed] font-semibold py-2.5 rounded transition-colors text-sm uppercase tracking-widest"
-            >
-              Ver catálogo
-            </Link>
-          </div>
-        ) : (
-          /* ── Formulario ── */
           <>
             <h1 className="text-xs font-bold uppercase tracking-widest text-[#838f6f] mb-6">
               Crear cuenta
@@ -179,7 +148,6 @@ export default function RegisterPage() {
               </Link>
             </p>
           </>
-        )}
       </div>
     </div>
   );

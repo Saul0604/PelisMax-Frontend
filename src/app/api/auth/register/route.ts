@@ -12,5 +12,46 @@ export async function POST(req: NextRequest) {
   });
 
   const data = await res.json();
-  return NextResponse.json(data, { status: res.status });
+
+  if (!res.ok) {
+    return NextResponse.json(data, { status: res.status });
+  }
+
+  const response = NextResponse.json(data, { status: res.status });
+
+  // Case 1: backend already returns token on register
+  if (data.token) {
+    response.cookies.set("auth_token", data.token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+    return response;
+  }
+
+  // Case 2: backend requires a separate login call
+  try {
+    const loginRes = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: body.email, password: body.password }),
+    });
+
+    if (loginRes.ok) {
+      const loginData = await loginRes.json();
+      if (loginData.token) {
+        response.cookies.set("auth_token", loginData.token, {
+          httpOnly: true,
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 7,
+          path: "/",
+        });
+      }
+    }
+  } catch {
+    // Auto-login failed — registration still succeeded, user can log in manually
+  }
+
+  return response;
 }
