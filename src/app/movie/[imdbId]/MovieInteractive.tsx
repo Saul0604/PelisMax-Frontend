@@ -13,6 +13,7 @@ interface Comment {
 interface Props {
   imdbId: string;
   movieTitle: string;
+  moviePoster: string;
   initialAverage: number;
   initialVotes: number;
   initialUserScore: number | null;
@@ -63,6 +64,7 @@ function StarRating({
 export default function MovieInteractive({
   imdbId,
   movieTitle,
+  moviePoster,
   initialAverage,
   initialVotes,
   initialUserScore,
@@ -73,6 +75,42 @@ export default function MovieInteractive({
   const [votes, setVotes] = useState(initialVotes);
   const [userScore, setUserScore] = useState(initialUserScore ?? 0);
   const [ratingLoading, setRatingLoading] = useState(false);
+
+  // Watchlist state
+  const [inWatchlist, setInWatchlist] = useState(false);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    fetch("/api/watchlist")
+      .then((r) => r.json())
+      .then((data: Array<{ movieId: string }>) => {
+        if (Array.isArray(data)) {
+          setInWatchlist(data.some((e) => e.movieId === imdbId));
+        }
+      })
+      .catch(() => {});
+  }, [imdbId, currentUserId]);
+
+  async function handleWatchlist() {
+    if (!currentUserId) { setShowLoginPrompt(true); return; }
+    setWatchlistLoading(true);
+    try {
+      if (inWatchlist) {
+        const res = await fetch(`/api/watchlist/${imdbId}`, { method: "DELETE" });
+        if (res.ok) setInWatchlist(false);
+      } else {
+        const res = await fetch("/api/watchlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ movieId: imdbId, posterPath: moviePoster }),
+        });
+        if (res.ok) setInWatchlist(true);
+      }
+    } finally {
+      setWatchlistLoading(false);
+    }
+  }
 
   // Fetch userScore client-side — backend no longer sends it for public requests
   useEffect(() => {
@@ -232,6 +270,26 @@ export default function MovieInteractive({
                 </button>
               </div>
             )}
+          </div>
+          {/* Watchlist */}
+          <div>
+            <p className="text-xs text-[#838f6f] mb-2 uppercase tracking-widest">
+              Watchlist
+            </p>
+            <button
+              onClick={handleWatchlist}
+              disabled={watchlistLoading}
+              className={`flex items-center gap-2 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                inWatchlist
+                  ? "bg-[#710014] border-[#710014] text-[#f2f1ed] hover:bg-[#8b0018]"
+                  : "border-[#2a2a2a] text-[#838f6f] hover:border-[#5a5a5a] hover:text-[#f2f1ed]"
+              }`}
+            >
+              <svg className="w-3.5 h-3.5" fill={inWatchlist ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              {inWatchlist ? "En watchlist" : "Agregar a watchlist"}
+            </button>
           </div>
         </div>
       </section>

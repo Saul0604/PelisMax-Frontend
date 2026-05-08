@@ -160,6 +160,7 @@ export default async function MovieDetailPage({ params }: Props) {
       <MovieInteractive
         imdbId={imdbId}
         movieTitle={movie.Title}
+        moviePoster={movie.Poster ?? ""}
         initialAverage={community.averageScore ?? 0}
         initialVotes={community.totalVotes ?? 0}
         initialUserScore={community.userScore ?? null}

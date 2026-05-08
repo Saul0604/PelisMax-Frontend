@@ -135,6 +135,11 @@ export default function Header() {
             <Link href="/catalogo" className="hover:text-[#f2f1ed] transition-colors">
               Catálogo
             </Link>
+            {user && (
+              <Link href="/watchlist" className="hover:text-[#f2f1ed] transition-colors">
+                Watchlist
+              </Link>
+            )}
           </nav>
 
           {/* Actions — col 3, derecha */}
