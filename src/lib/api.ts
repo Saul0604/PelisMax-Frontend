@@ -26,20 +26,58 @@ export async function getCurrentUser() {
   }
 }
 
-// Public — no auth required
 export async function getMoviesByCategory() {
-  const res = await fetch(`${BASE_URL}/movies`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Error al obtener películas");
+  const res = await fetch(`${BASE_URL}/movies`, {
+    cache: "no-store",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) return [];
   return res.json();
 }
 
-// Public — no auth required
+// Returns { movies: Movie[], totalResults: number }
 export async function searchMovies(query: string, page = 1) {
   const res = await fetch(
     `${BASE_URL}/movies/search?q=${encodeURIComponent(query)}&page=${page}`,
-    { cache: "no-store" }
+    { cache: "no-store", headers: await authHeaders() }
   );
-  if (!res.ok) throw new Error("Error en la búsqueda");
+  if (!res.ok) return { movies: [], totalResults: 0 };
+  return res.json();
+}
+
+export async function getWatchlist() {
+  const res = await fetch(`${BASE_URL}/watchlist`, {
+    cache: "no-store",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function getMyReviews() {
+  const res = await fetch(`${BASE_URL}/reviews/me`, {
+    cache: "no-store",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function getMyLists() {
+  const res = await fetch(`${BASE_URL}/lists`, {
+    cache: "no-store",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function getListById(id: string) {
+  const res = await fetch(`${BASE_URL}/lists/${id}`, {
+    cache: "no-store",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) return null;
   return res.json();
 }
 
