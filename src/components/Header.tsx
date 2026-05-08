@@ -135,6 +135,11 @@ export default function Header() {
             <Link href="/catalogo" className="hover:text-[#f2f1ed] transition-colors">
               Catálogo
             </Link>
+            {user && (
+              <Link href="/watchlist" className="hover:text-[#f2f1ed] transition-colors">
+                Watchlist
+              </Link>
+            )}
           </nav>
 
           {/* Actions — col 3, derecha */}
@@ -153,6 +158,11 @@ export default function Header() {
                     className="bg-transparent text-[#f2f1ed] text-sm outline-none w-40 placeholder:text-[#5a5a5a]"
                     onKeyDown={(e) => {
                       if (e.key === "Escape") { setSearchOpen(false); setQuery(""); }
+                      if (e.key === "Enter" && query.trim()) {
+                        setSearchOpen(false);
+                        router.push(`/buscar?q=${encodeURIComponent(query.trim())}`);
+                        setQuery("");
+                      }
                     }}
                   />
                   <button onClick={() => { setSearchOpen(false); setQuery(""); }}>
