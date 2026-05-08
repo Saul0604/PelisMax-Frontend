@@ -184,6 +184,47 @@ export default function MovieInteractive({
     }
   }
 
+  // Review state
+  const [reviewContent, setReviewContent] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+
+  async function handleReview(e: React.SyntheticEvent) {
+    e.preventDefault();
+    if (!currentUserId || !reviewContent.trim() || reviewRating === 0) return;
+    setReviewLoading(true);
+    setReviewError("");
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          movieId: imdbId,
+          movieTitle,
+          moviePoster,
+          movieYear: "",
+          content: reviewContent.trim(),
+          rating: reviewRating,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setReviewError(data.error || "Error al publicar la reseña.");
+        return;
+      }
+      setReviewContent("");
+      setReviewRating(0);
+      setReviewSuccess(true);
+      setTimeout(() => setReviewSuccess(false), 3000);
+    } catch {
+      setReviewError("No se pudo conectar con el servidor.");
+    } finally {
+      setReviewLoading(false);
+    }
+  }
+
   async function handleDeleteComment(commentId: string) {
     const res = await fetch(`/api/comments/${commentId}`, { method: "DELETE" });
     if (res.ok) {
@@ -380,6 +421,53 @@ export default function MovieInteractive({
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      {/* ── Reseña ── */}
+      <section>
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#838f6f] mb-4">
+          Escribir reseña
+        </h2>
+
+        {currentUserId ? (
+          <form onSubmit={handleReview} className="space-y-3 max-w-xl">
+            <div>
+              <p className="text-xs text-[#838f6f] mb-2 uppercase tracking-widest">Tu puntuación</p>
+              <StarRating
+                value={reviewRating}
+                onChange={setReviewRating}
+                disabled={reviewLoading}
+              />
+            </div>
+            <textarea
+              value={reviewContent}
+              onChange={(e) => { setReviewContent(e.target.value); setReviewError(""); }}
+              placeholder="Escribe tu reseña... (máx. 500 caracteres)"
+              disabled={reviewLoading}
+              maxLength={500}
+              rows={4}
+              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] focus:border-[#710014] disabled:opacity-50 rounded px-3 py-2.5 text-sm text-[#f2f1ed] placeholder:text-[#5a5a5a] outline-none transition-colors resize-none"
+            />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={reviewLoading || !reviewContent.trim() || reviewRating === 0}
+                  className="bg-[#710014] hover:bg-[#8b0018] disabled:opacity-50 disabled:cursor-not-allowed text-[#f2f1ed] text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded transition-colors"
+                >
+                  {reviewLoading ? "Publicando..." : "Publicar reseña"}
+                </button>
+                {reviewError && <span className="text-xs text-white font-medium">{reviewError}</span>}
+                {reviewSuccess && <span className="text-xs text-[#838f6f] font-medium">¡Reseña publicada!</span>}
+              </div>
+              <span className="text-xs text-[#5a5a5a]">{reviewContent.length}/500</span>
+            </div>
+          </form>
+        ) : (
+          <p className="text-sm text-[#5a5a5a]">
+            <Link href="/login" className="text-[#f2f1ed] hover:underline">Inicia sesión</Link> para escribir una reseña.
+          </p>
         )}
       </section>
     </div>

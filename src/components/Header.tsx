@@ -188,16 +188,16 @@ export default function Header() {
             {!sessionReady ? null : user ? (
               /* ── Logged in ── */
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
+                <Link href="/perfil" className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-[#710014] flex items-center justify-center shrink-0">
                     <span className="text-[10px] font-bold text-[#f2f1ed] uppercase">
                       {user.name.charAt(0)}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold text-[#f2f1ed] tracking-wide max-w-[120px] truncate">
+                  <span className="text-xs font-semibold text-[#f2f1ed] tracking-wide max-w-[120px] truncate hover:text-[#838f6f] transition-colors">
                     {user.name}
                   </span>
-                </div>
+                </Link>
                 <button
                   onClick={() => setLogoutConfirm(true)}
                   className="text-xs font-semibold uppercase tracking-widest text-[#5a5a5a] hover:text-[#f2f1ed] transition-colors"
