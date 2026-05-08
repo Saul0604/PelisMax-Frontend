@@ -125,6 +125,45 @@ export default function MovieInteractive({
       .catch(() => {});
   }, [imdbId, currentUserId]);
 
+  // Lists state
+  interface UserList { _id: string; name: string }
+  const [userLists, setUserLists] = useState<UserList[]>([]);
+  const [listsOpen, setListsOpen] = useState(false);
+  const [listAdding, setListAdding] = useState<string | null>(null);
+  const [listSuccess, setListSuccess] = useState("");
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    fetch("/api/lists")
+      .then((r) => r.json())
+      .then((data: UserList[]) => { if (Array.isArray(data)) setUserLists(data); })
+      .catch(() => {});
+  }, [currentUserId]);
+
+  async function handleAddToList(listId: string) {
+    setListAdding(listId);
+    try {
+      const res = await fetch(`/api/lists/${listId}/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          movieId: imdbId,
+          title: movieTitle,
+          poster: moviePoster,
+          releaseYear: "",
+        }),
+      });
+      if (res.ok) {
+        const list = userLists.find((l) => l._id === listId);
+        setListSuccess(`Agregada a "${list?.name ?? "la lista"}"`);
+        setListsOpen(false);
+        setTimeout(() => setListSuccess(""), 3000);
+      }
+    } finally {
+      setListAdding(null);
+    }
+  }
+
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [commentText, setCommentText] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
@@ -181,6 +220,47 @@ export default function MovieInteractive({
       setCommentError("No se pudo conectar con el servidor.");
     } finally {
       setCommentLoading(false);
+    }
+  }
+
+  // Review state
+  const [reviewContent, setReviewContent] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+
+  async function handleReview(e: React.SyntheticEvent) {
+    e.preventDefault();
+    if (!currentUserId || !reviewContent.trim() || reviewRating === 0) return;
+    setReviewLoading(true);
+    setReviewError("");
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          movieId: imdbId,
+          movieTitle,
+          moviePoster,
+          movieYear: "",
+          content: reviewContent.trim(),
+          rating: reviewRating,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setReviewError(data.error || "Error al publicar la reseña.");
+        return;
+      }
+      setReviewContent("");
+      setReviewRating(0);
+      setReviewSuccess(true);
+      setTimeout(() => setReviewSuccess(false), 3000);
+    } catch {
+      setReviewError("No se pudo conectar con el servidor.");
+    } finally {
+      setReviewLoading(false);
     }
   }
 
@@ -291,6 +371,64 @@ export default function MovieInteractive({
               {inWatchlist ? "En watchlist" : "Agregar a watchlist"}
             </button>
           </div>
+
+          {/* Agregar a lista */}
+          {currentUserId && (
+            <div className="relative">
+              <p className="text-xs text-[#838f6f] mb-2 uppercase tracking-widest">
+                Mis listas
+              </p>
+              <button
+                onClick={() => setListsOpen((v) => !v)}
+                className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded border border-[#2a2a2a] text-[#838f6f] hover:border-[#5a5a5a] hover:text-[#f2f1ed] transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                Agregar a lista
+              </button>
+
+              {listsOpen && (
+                <div className="absolute top-full mt-1 left-0 z-20 bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg shadow-lg py-1 min-w-[180px]">
+                  {userLists.length === 0 ? (
+                    <div className="px-4 py-3">
+                      <p className="text-xs text-[#5a5a5a]">No tienes listas todavía.</p>
+                      <Link
+                        href="/listas"
+                        className="text-xs text-[#f2f1ed] hover:text-[#838f6f] transition-colors mt-1 block"
+                      >
+                        Crear una lista →
+                      </Link>
+                    </div>
+                  ) : (
+                    <>
+                      {userLists.map((list) => (
+                        <button
+                          key={list._id}
+                          onClick={() => handleAddToList(list._id)}
+                          disabled={listAdding === list._id}
+                          className="w-full text-left px-4 py-2 text-xs text-[#f2f1ed] hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 truncate"
+                        >
+                          {list.name}
+                        </button>
+                      ))}
+                      <div className="border-t border-[#2a2a2a] mt-1 pt-1">
+                        <Link
+                          href="/listas"
+                          className="block px-4 py-2 text-xs text-[#838f6f] hover:text-[#f2f1ed] transition-colors"
+                        >
+                          Gestionar listas →
+                        </Link>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              {listSuccess && (
+                <p className="text-xs text-[#838f6f] font-medium mt-1">{listSuccess}</p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -380,6 +518,53 @@ export default function MovieInteractive({
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      {/* ── Reseña ── */}
+      <section>
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#838f6f] mb-4">
+          Escribir reseña
+        </h2>
+
+        {currentUserId ? (
+          <form onSubmit={handleReview} className="space-y-3 max-w-xl">
+            <div>
+              <p className="text-xs text-[#838f6f] mb-2 uppercase tracking-widest">Tu puntuación</p>
+              <StarRating
+                value={reviewRating}
+                onChange={setReviewRating}
+                disabled={reviewLoading}
+              />
+            </div>
+            <textarea
+              value={reviewContent}
+              onChange={(e) => { setReviewContent(e.target.value); setReviewError(""); }}
+              placeholder="Escribe tu reseña... (máx. 500 caracteres)"
+              disabled={reviewLoading}
+              maxLength={500}
+              rows={4}
+              className="w-full bg-[#1e1e1e] border border-[#2a2a2a] focus:border-[#710014] disabled:opacity-50 rounded px-3 py-2.5 text-sm text-[#f2f1ed] placeholder:text-[#5a5a5a] outline-none transition-colors resize-none"
+            />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={reviewLoading || !reviewContent.trim() || reviewRating === 0}
+                  className="bg-[#710014] hover:bg-[#8b0018] disabled:opacity-50 disabled:cursor-not-allowed text-[#f2f1ed] text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded transition-colors"
+                >
+                  {reviewLoading ? "Publicando..." : "Publicar reseña"}
+                </button>
+                {reviewError && <span className="text-xs text-white font-medium">{reviewError}</span>}
+                {reviewSuccess && <span className="text-xs text-[#838f6f] font-medium">¡Reseña publicada!</span>}
+              </div>
+              <span className="text-xs text-[#5a5a5a]">{reviewContent.length}/500</span>
+            </div>
+          </form>
+        ) : (
+          <p className="text-sm text-[#5a5a5a]">
+            <Link href="/login" className="text-[#f2f1ed] hover:underline">Inicia sesión</Link> para escribir una reseña.
+          </p>
         )}
       </section>
     </div>
