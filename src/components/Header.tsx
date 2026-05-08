@@ -136,9 +136,14 @@ export default function Header() {
               Catálogo
             </Link>
             {user && (
-              <Link href="/watchlist" className="hover:text-[#f2f1ed] transition-colors">
-                Watchlist
-              </Link>
+              <>
+                <Link href="/watchlist" className="hover:text-[#f2f1ed] transition-colors">
+                  Watchlist
+                </Link>
+                <Link href="/listas" className="hover:text-[#f2f1ed] transition-colors">
+                  Mis listas
+                </Link>
+              </>
             )}
           </nav>
 

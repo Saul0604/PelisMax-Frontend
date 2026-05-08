@@ -125,6 +125,45 @@ export default function MovieInteractive({
       .catch(() => {});
   }, [imdbId, currentUserId]);
 
+  // Lists state
+  interface UserList { _id: string; name: string }
+  const [userLists, setUserLists] = useState<UserList[]>([]);
+  const [listsOpen, setListsOpen] = useState(false);
+  const [listAdding, setListAdding] = useState<string | null>(null);
+  const [listSuccess, setListSuccess] = useState("");
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    fetch("/api/lists")
+      .then((r) => r.json())
+      .then((data: UserList[]) => { if (Array.isArray(data)) setUserLists(data); })
+      .catch(() => {});
+  }, [currentUserId]);
+
+  async function handleAddToList(listId: string) {
+    setListAdding(listId);
+    try {
+      const res = await fetch(`/api/lists/${listId}/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          movieId: imdbId,
+          title: movieTitle,
+          poster: moviePoster,
+          releaseYear: "",
+        }),
+      });
+      if (res.ok) {
+        const list = userLists.find((l) => l._id === listId);
+        setListSuccess(`Agregada a "${list?.name ?? "la lista"}"`);
+        setListsOpen(false);
+        setTimeout(() => setListSuccess(""), 3000);
+      }
+    } finally {
+      setListAdding(null);
+    }
+  }
+
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [commentText, setCommentText] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
@@ -332,6 +371,64 @@ export default function MovieInteractive({
               {inWatchlist ? "En watchlist" : "Agregar a watchlist"}
             </button>
           </div>
+
+          {/* Agregar a lista */}
+          {currentUserId && (
+            <div className="relative">
+              <p className="text-xs text-[#838f6f] mb-2 uppercase tracking-widest">
+                Mis listas
+              </p>
+              <button
+                onClick={() => setListsOpen((v) => !v)}
+                className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded border border-[#2a2a2a] text-[#838f6f] hover:border-[#5a5a5a] hover:text-[#f2f1ed] transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                Agregar a lista
+              </button>
+
+              {listsOpen && (
+                <div className="absolute top-full mt-1 left-0 z-20 bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg shadow-lg py-1 min-w-[180px]">
+                  {userLists.length === 0 ? (
+                    <div className="px-4 py-3">
+                      <p className="text-xs text-[#5a5a5a]">No tienes listas todavía.</p>
+                      <Link
+                        href="/listas"
+                        className="text-xs text-[#f2f1ed] hover:text-[#838f6f] transition-colors mt-1 block"
+                      >
+                        Crear una lista →
+                      </Link>
+                    </div>
+                  ) : (
+                    <>
+                      {userLists.map((list) => (
+                        <button
+                          key={list._id}
+                          onClick={() => handleAddToList(list._id)}
+                          disabled={listAdding === list._id}
+                          className="w-full text-left px-4 py-2 text-xs text-[#f2f1ed] hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 truncate"
+                        >
+                          {list.name}
+                        </button>
+                      ))}
+                      <div className="border-t border-[#2a2a2a] mt-1 pt-1">
+                        <Link
+                          href="/listas"
+                          className="block px-4 py-2 text-xs text-[#838f6f] hover:text-[#f2f1ed] transition-colors"
+                        >
+                          Gestionar listas →
+                        </Link>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              {listSuccess && (
+                <p className="text-xs text-[#838f6f] font-medium mt-1">{listSuccess}</p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
