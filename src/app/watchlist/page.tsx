@@ -4,9 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface WatchlistEntry {
-  movieId: string;
-  posterPath: string;
-  _id: string;
+  id: string;
+  poster: string;
 }
 
 export default async function WatchlistPage() {
@@ -47,21 +46,21 @@ export default async function WatchlistPage() {
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
             {entries.map((entry) => (
               <Link
-                key={entry._id}
-                href={`/movie/${entry.movieId}`}
+                key={entry.id}
+                href={`/movie/${entry.id}`}
                 className="group relative aspect-[2/3] rounded overflow-hidden bg-[#1e1e1e]"
               >
-                {entry.posterPath && entry.posterPath !== "N/A" ? (
+                {entry.poster && entry.poster !== "N/A" ? (
                   <Image
-                    src={entry.posterPath}
-                    alt={entry.movieId}
+                    src={entry.poster}
+                    alt={entry.id}
                     fill
                     className="object-cover transition-opacity group-hover:opacity-60"
                     sizes="(max-width: 640px) 33vw, 12vw"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] text-[#5a5a5a]">{entry.movieId}</span>
+                    <span className="text-[10px] text-[#5a5a5a]">{entry.id}</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors" />

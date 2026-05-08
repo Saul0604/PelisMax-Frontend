@@ -84,9 +84,9 @@ export default function MovieInteractive({
     if (!currentUserId) return;
     fetch("/api/watchlist")
       .then((r) => r.json())
-      .then((data: Array<{ movieId: string }>) => {
+      .then((data: Array<{ id: string }>) => {
         if (Array.isArray(data)) {
-          setInWatchlist(data.some((e) => e.movieId === imdbId));
+          setInWatchlist(data.some((e) => e.id === imdbId));
         }
       })
       .catch(() => {});
