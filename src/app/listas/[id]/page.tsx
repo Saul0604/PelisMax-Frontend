@@ -75,7 +75,7 @@ export default async function ListaDetallePage({ params }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
             {list.movies.map((movie) => (
               <Link
                 key={movie.movieId}
@@ -88,7 +88,7 @@ export default async function ListaDetallePage({ params }: Props) {
                     alt={movie.title}
                     fill
                     className="object-cover transition-opacity group-hover:opacity-60"
-                    sizes="(max-width: 640px) 33vw, 12vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-end p-2">

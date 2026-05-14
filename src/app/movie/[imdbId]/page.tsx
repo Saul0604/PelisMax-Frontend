@@ -2,6 +2,7 @@ import { getMovieDetail, getComments, getCurrentUser } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import MovieInteractive from "./MovieInteractive";
+import { ChevronLeft, Film, Star } from "lucide-react";
 
 interface Props {
   params: Promise<{ imdbId: string }>;
@@ -47,9 +48,7 @@ export default async function MovieDetailPage({ params }: Props) {
         href="/"
         className="inline-flex items-center gap-1.5 text-xs text-[#838f6f] hover:text-[#f2f1ed] transition-colors mb-8"
       >
-        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
+        <ChevronLeft size={16} />
         Volver
       </Link>
 
@@ -70,9 +69,7 @@ export default async function MovieDetailPage({ params }: Props) {
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-[#5a5a5a]">
-                <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4" />
-                </svg>
+                <Film size={48} strokeWidth={1} />
               </div>
             )}
           </div>
@@ -146,7 +143,10 @@ export default async function MovieDetailPage({ params }: Props) {
             {movie.imdbRating && movie.imdbRating !== "N/A" && (
               <div>
                 <dt className="text-[#5a5a5a] uppercase tracking-widest mb-0.5">IMDb</dt>
-                <dd className="text-[#f2f1ed]">⭐ {movie.imdbRating} / 10</dd>
+                <dd className="flex items-center gap-1.5 text-[#f2f1ed]">
+                  <Star size={14} className="text-[#710014] fill-[#710014]" />
+                  {movie.imdbRating} / 10
+                </dd>
               </div>
             )}
           </dl>

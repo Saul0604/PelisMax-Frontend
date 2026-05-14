@@ -52,7 +52,7 @@ export default async function BuscarPage({ searchParams }: Props) {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
               {movies.map((movie) => (
                 <Link
                   key={movie.imdbID}
@@ -65,7 +65,7 @@ export default async function BuscarPage({ searchParams }: Props) {
                       alt={movie.Title}
                       fill
                       className="object-cover transition-opacity group-hover:opacity-60"
-                      sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 12vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 16vw"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-end p-2">
