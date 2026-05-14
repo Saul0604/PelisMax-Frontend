@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 
 interface MovieList {
   _id: string;
@@ -74,9 +75,14 @@ export default function ListasPage() {
           </div>
           <button
             onClick={() => setShowForm((v) => !v)}
-            className="text-xs font-semibold uppercase tracking-widest text-[#f2f1ed] bg-[#710014] hover:bg-[#8b0018] transition-colors px-4 py-2 rounded"
+            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#f2f1ed] bg-[#710014] hover:bg-[#8b0018] transition-colors px-4 py-2 rounded"
           >
-            {showForm ? "Cancelar" : "+ Nueva lista"}
+            {showForm ? "Cancelar" : (
+              <>
+                <Plus size={14} />
+                Nueva lista
+              </>
+            )}
           </button>
         </div>
 
@@ -123,11 +129,11 @@ export default function ListasPage() {
                   {list.movies?.length ?? 0} {(list.movies?.length ?? 0) === 1 ? "película" : "películas"}
                 </p>
                 {list.movies && list.movies.length > 0 && (
-                  <div className="flex gap-1 mt-3">
+                  <div className="flex gap-2 mt-4">
                     {list.movies.slice(0, 5).map((m, i) => (
                       <div
                         key={i}
-                        className="w-8 h-12 rounded bg-[#2a2a2a] overflow-hidden relative shrink-0"
+                        className="w-12 h-18 rounded bg-[#2a2a2a] overflow-hidden relative shrink-0 border border-[#333]"
                       >
                         {m.poster && m.poster !== "N/A" && (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -136,8 +142,8 @@ export default function ListasPage() {
                       </div>
                     ))}
                     {(list.movies?.length ?? 0) > 5 && (
-                      <div className="w-8 h-12 rounded bg-[#2a2a2a] flex items-center justify-center shrink-0">
-                        <span className="text-[9px] text-[#5a5a5a]">+{(list.movies?.length ?? 0) - 5}</span>
+                      <div className="w-12 h-18 rounded bg-[#2a2a2a] flex items-center justify-center shrink-0 border border-[#333]">
+                        <span className="text-[11px] font-bold text-[#5a5a5a] tracking-tight">+{(list.movies?.length ?? 0) - 5}</span>
                       </div>
                     )}
                   </div>

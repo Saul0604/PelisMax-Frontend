@@ -2,6 +2,7 @@ import { getCurrentUser, getWatchlist } from "@/lib/api";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Film } from "lucide-react";
 
 interface WatchlistEntry {
   id: string;
@@ -43,7 +44,7 @@ export default async function WatchlistPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {entries.map((entry) => (
               <Link
                 key={entry.id}
@@ -56,11 +57,11 @@ export default async function WatchlistPage() {
                     alt={entry.id}
                     fill
                     className="object-cover transition-opacity group-hover:opacity-60"
-                    sizes="(max-width: 640px) 33vw, 12vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] text-[#5a5a5a]">{entry.id}</span>
+                  <div className="absolute inset-0 flex items-center justify-center text-[#5a5a5a]">
+                    <Film size={40} strokeWidth={1} />
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors" />

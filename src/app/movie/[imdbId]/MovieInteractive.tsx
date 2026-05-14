@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Star, Bookmark, List, Trash2, X } from "lucide-react";
 
 interface Comment {
   _id: string;
@@ -43,18 +44,15 @@ function StarRating({
           onClick={() => onChange(star)}
           onMouseEnter={() => setHovered(star)}
           onMouseLeave={() => setHovered(0)}
-          className="disabled:cursor-not-allowed"
+          className="disabled:cursor-not-allowed outline-none"
           aria-label={`${star} estrellas`}
         >
-          <svg
-            className={`w-7 h-7 transition-colors ${
-              star <= active ? "text-[#710014]" : "text-[#2a2a2a]"
-            } ${!disabled ? "hover:text-[#8b0018]" : ""}`}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
+          <Star
+            size={28}
+            className={`transition-all duration-200 ${
+              star <= active ? "text-[#710014] fill-[#710014]" : "text-[#2a2a2a]"
+            } ${!disabled ? "hover:scale-110 active:scale-95" : ""}`}
+          />
         </button>
       ))}
     </div>
@@ -296,14 +294,11 @@ export default function MovieInteractive({
             <div>
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <svg
+                  <Star
                     key={s}
-                    className={`w-4 h-4 ${s <= Math.round(average) ? "text-[#710014]" : "text-[#2a2a2a]"}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                    size={16}
+                    className={`${s <= Math.round(average) ? "text-[#710014] fill-[#710014]" : "text-[#2a2a2a]"}`}
+                  />
                 ))}
               </div>
               <p className="text-xs text-[#5a5a5a] mt-0.5">
@@ -344,9 +339,7 @@ export default function MovieInteractive({
                   onClick={() => setShowLoginPrompt(false)}
                   className="text-[#5a5a5a] hover:text-[#f2f1ed] transition-colors ml-auto"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X size={14} />
                 </button>
               </div>
             )}
@@ -365,9 +358,7 @@ export default function MovieInteractive({
                   : "border-[#2a2a2a] text-[#838f6f] hover:border-[#5a5a5a] hover:text-[#f2f1ed]"
               }`}
             >
-              <svg className="w-3.5 h-3.5" fill={inWatchlist ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
+              <Bookmark size={14} fill={inWatchlist ? "currentColor" : "none"} />
               {inWatchlist ? "En watchlist" : "Agregar a watchlist"}
             </button>
           </div>
@@ -382,9 +373,7 @@ export default function MovieInteractive({
                 onClick={() => setListsOpen((v) => !v)}
                 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded border border-[#2a2a2a] text-[#838f6f] hover:border-[#5a5a5a] hover:text-[#f2f1ed] transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
+                <List size={14} />
                 Agregar a lista
               </button>
 
@@ -507,9 +496,7 @@ export default function MovieInteractive({
                         className="text-[#5a5a5a] hover:text-[#710014] transition-colors"
                         aria-label="Eliminar comentario"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
+                        <Trash2 size={14} />
                       </button>
                     )}
                   </div>

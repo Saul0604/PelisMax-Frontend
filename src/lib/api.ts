@@ -26,8 +26,8 @@ export async function getCurrentUser() {
   }
 }
 
-export async function getMoviesByCategory() {
-  const res = await fetch(`${BASE_URL}/movies`, {
+export async function getMoviesByCategory(page = 1) {
+  const res = await fetch(`${BASE_URL}/movies?page=${page}`, {
     cache: "no-store",
     headers: await authHeaders(),
   });
